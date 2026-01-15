@@ -39,19 +39,51 @@ export async function GET(request: NextRequest) {
             }),
         });
 
-        const data = await tokenResponse.json();
+        const tokenData = await tokenResponse.json();
 
         if (!tokenResponse.ok) {
             return NextResponse.json({
                 error: 'Token exchange failed',
-                details: data,
+                details: tokenData,
                 redirect_uri_used: callbackUrl
             }, { status: tokenResponse.status });
         }
 
+        const accessToken = tokenData.access_token;
+
+        // --- FETCH CUSTOMER DATA TO VERIFY TOKEN ---
+        const graphqlUrl = `https://shopify.com/${shopId}/account/customer/api/unstable/graphql`;
+
+        const customerQuery = {
+            query: `
+        query {
+          customer {
+            firstName
+            lastName
+            emailAddress {
+              emailAddress
+            }
+          }
+        }
+      `
+        };
+
+        const customerResponse = await fetch(graphqlUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': accessToken, // Shopify Customer API uses the token directly
+            },
+            body: JSON.stringify(customerQuery),
+        });
+
+        const customerData = await customerResponse.json();
+
         const response = NextResponse.json({
             message: 'Successfully logged in!',
-            token_data: data
+            customer: customerData.data?.customer || 'Could not fetch customer details',
+            token_data: tokenData,
+            debug_customer_raw: customerData
         });
 
         response.cookies.delete('shopify_state');
