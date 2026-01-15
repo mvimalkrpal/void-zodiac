@@ -7,7 +7,9 @@ export async function GET(request: NextRequest) {
 
     const shopId = process.env.SHOPIFY_SHOP_ID;
     const clientId = process.env.SHOPIFY_CLIENT_ID;
-    const callbackUrl = process.env.NEXT_PUBLIC_CALLBACK_URL || 'https://void-zodiac.vercel.app/api/auth/callback';
+
+    // MATCHING THE SCREENSHOT: Removed '/api' to match the whitelisted URI
+    const callbackUrl = 'https://void-zodiac.vercel.app/auth/callback';
 
     const storedState = request.cookies.get('shopify_state')?.value;
     const codeVerifier = request.cookies.get('shopify_code_verifier')?.value;
@@ -48,7 +50,6 @@ export async function GET(request: NextRequest) {
             token_data: data
         });
 
-        // Cleanup cookies
         response.cookies.delete('shopify_state');
         response.cookies.delete('shopify_code_verifier');
 

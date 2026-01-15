@@ -4,7 +4,9 @@ import { generateCodeVerifier, generateCodeChallenge, generateState } from '@/li
 export async function GET() {
     const shopId = process.env.SHOPIFY_SHOP_ID;
     const clientId = process.env.SHOPIFY_CLIENT_ID;
-    const callbackUrl = process.env.NEXT_PUBLIC_CALLBACK_URL || 'https://void-zodiac.vercel.app/api/auth/callback';
+
+    // MATCHING THE SCREENSHOT: Removed '/api' from the path
+    const callbackUrl = 'https://void-zodiac.vercel.app/auth/callback';
 
     if (!shopId || !clientId) {
         return NextResponse.json({ error: 'Missing configuration' }, { status: 500 });
@@ -14,7 +16,6 @@ export async function GET() {
     const codeVerifier = generateCodeVerifier();
     const codeChallenge = generateCodeChallenge(codeVerifier);
 
-    // Shopify Customer Account API Authorize URL with PKCE
     const authUrl = `https://shopify.com/authentication/${shopId}/oauth/authorize?` +
         new URLSearchParams({
             client_id: clientId,
@@ -28,7 +29,6 @@ export async function GET() {
 
     const response = NextResponse.redirect(authUrl);
 
-    // Store code_verifier and state in cookies
     response.cookies.set('shopify_code_verifier', codeVerifier, {
         httpOnly: true,
         secure: true,
