@@ -1,4 +1,6 @@
+export const runtime = 'edge';
 import { NextResponse } from 'next/server';
+
 import { generateCodeVerifier, generateCodeChallenge, generateState } from '@/lib/pkce';
 
 export async function GET() {
@@ -6,7 +8,7 @@ export async function GET() {
     const clientId = process.env.SHOPIFY_CLIENT_ID;
 
     // MATCHING THE SCREENSHOT: Removed '/api' from the path
-    const callbackUrl = 'https://void-zodiac.vercel.app/auth/callback';
+    const callbackUrl = process.env.NEXT_PUBLIC_CALLBACK_URL || 'https://void-zodiac.vercel.app/auth/callback';
 
     if (!shopId || !clientId) {
         return NextResponse.json({ error: 'Missing configuration' }, { status: 500 });

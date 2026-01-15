@@ -1,0 +1,8 @@
+name = "void-zodiac"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# These can also be set in the Cloudflare Dashboard
+SHOPIFY_SHOP_ID = "97091158305"
+SHOPIFY_CLIENT_ID = "5bfaff13-2fc4-4c46-a008-414b9de888f4"
